@@ -134,40 +134,36 @@ class GalleryImageAdmin(admin.ModelAdmin):
 
 
 # ── Member Registration ──────────────────────────────────────────────────
-
 @admin.register(MemberRegistration)
 class MemberRegistrationAdmin(admin.ModelAdmin):
-    list_display = [
-        'full_name',
-        'phone',
-        'county',
-        'gender',
-        'age_bracket',
-        'is_verified',
-        'created_at',
-    ]
-
-    list_filter = [
-        'county',
-        'gender',
-        'age_bracket',
-        'is_verified',
-        'created_at',
-    ]
-
-    search_fields = [
+    list_display    = [
         'full_name',
         'phone',
         'email',
-        'sub_county',
+        'gender',
+        'county',
+        'constituency',
         'ward',
+        'is_verified',
+        'created_at',
     ]
-
-    list_editable = ['is_verified']
-
+    list_filter     = ['county', 'gender', 'is_verified', 'created_at']
+    search_fields   = ['full_name', 'phone', 'email', 'constituency', 'ward']
+    list_editable   = ['is_verified']
     readonly_fields = ['created_at']
-
-    date_hierarchy = 'created_at'
+    date_hierarchy  = 'created_at'
+    fieldsets       = (
+        ('Personal Details', {
+            'fields': ('full_name', 'phone', 'email', 'gender'),
+        }),
+        ('Location', {
+            'fields': ('county', 'constituency', 'ward'),
+        }),
+        ('Admin', {
+            'fields': ('is_verified', 'created_at'),
+        }),
+    )
+    
 # ── Contact Message ───────────────────────────────────────────────────────
 
 @admin.register(ContactMessage)

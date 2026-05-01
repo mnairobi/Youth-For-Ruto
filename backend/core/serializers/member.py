@@ -5,22 +5,14 @@ from core.models import MemberRegistration
 class MemberRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model           = MemberRegistration
-        fields          = '__all__'
+        model            = MemberRegistration
+        fields           = '__all__'
         read_only_fields = ['is_verified', 'created_at']
 
-    # ── Custom validators ─────────────────────────────────────────
-
-    # def validate_id_number(self, value: str) -> str:
-    #     if MemberRegistration.objects.filter(id_number=value).exists():
-    #         raise serializers.ValidationError(
-    #             'This ID number is already registered with YR27.'
-    #         )
-    #     return value
-
     def validate_phone(self, value: str) -> str:
-        if not value.startswith('0') and not value.startswith('+254'):
+        cleaned = value.strip()
+        if not cleaned.startswith('0') and not cleaned.startswith('+254'):
             raise serializers.ValidationError(
-                'Enter a valid Kenyan phone number.'
+                'Enter a valid Kenyan phone number starting with 0 or +254.'
             )
-        return value
+        return cleaned

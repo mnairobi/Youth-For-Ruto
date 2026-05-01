@@ -2,8 +2,12 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from core.models import MemberRegistration, County, Event, Leader
-from core.serializers import StatsSerializer
+from core.models import (
+    MemberRegistration,
+    County,
+    Event,
+    Leader,
+)
 
 
 @api_view(['GET'])
@@ -11,17 +15,15 @@ from core.serializers import StatsSerializer
 def stats(request):
     """
     GET /api/stats/
-
-    Return aggregated site-wide statistics displayed on the homepage counter.
+    Returns real counts from the database.
     """
     data = {
-        'total_members':    MemberRegistration.objects.count(),
-        'total_counties':   County.objects.filter(registered_youth__gt=0).count() or 47,
-        'total_events':     Event.objects.count(),
-        'total_leaders':    Leader.objects.filter(is_active=True).count(),
-        'total_mobilizers': MemberRegistration.objects.filter(
-                                role_interest='mobilizer'
-                            ).count(),
+        'total_members':  MemberRegistration.objects.count(),
+        'total_counties': MemberRegistration.objects.values(
+                              'county'
+                          ).distinct().count(),
+        'total_events':   Event.objects.count(),
+        'total_leaders':  Leader.objects.filter(is_active=True).count(),
     }
-    serializer = StatsSerializer(data)
-    return Response(serializer.data)
+
+    return Response(data)
